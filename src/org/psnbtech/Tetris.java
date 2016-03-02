@@ -4,7 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Random;
-
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JFrame;
 
 /**
@@ -91,6 +99,21 @@ public class Tetris extends JFrame {
 	 * The current column of our tile.
 	 */
 	private int iCurrentCol;
+        
+        /**
+	 * The name of the file where we can save a game
+	 */
+        private static final String sNomDatosGuardado = "DatosGuardados.txt";
+        
+        /**
+	 * Archivo de escritura
+	 */
+        private PrintWriter fileOut;
+        
+        /**
+	 * The current column of our tile.
+	 */
+        private BufferedReader fileIn;
 	
 	/**
 	 * The current row of our tile.
@@ -238,6 +261,24 @@ public class Tetris extends JFrame {
                                                         iCurrentRotation + 1);
 					}
 					break;
+                                        
+                                /*
+                                 * Save Game - When pressed, check to see that
+                                 * we're not in a game over. If we're not,
+                                 * save the game.
+                                 */
+                                case KeyEvent.VK_G:
+                                    if(!isGameOver) {
+                                        try {
+                                            saveGame();
+                                        }
+                                        catch (IOException e) {
+                                            Logger.getLogger(
+                                            Tetris.class.getName()).log(
+                                                    Level.SEVERE, null, e);
+                                        }
+                                    }
+                                break;
 					
 				/*
 				 * Pause Game - When pressed, check to see that 
@@ -689,6 +730,18 @@ public class Tetris extends JFrame {
             
 		return iCurrentRotation;
 	}
+        
+        /**
+	 * Saves the actual game
+	 */
+        public void saveGame() throws IOException {
+            fileOut = new PrintWriter(new FileWriter(sNomDatosGuardado)); // Abrir archivo
+            fileOut.println(Integer.toString(iLevel)); // Guardar nivel
+            fileOut.println(Integer.toString(iScore)); // Guardar score
+            fileOut.println(Float.toString(fGameSpeed)); // Guardar gameSpeed
+            // Todavia falte
+            fileOut.close();
+        }
 
 	/**
 	 * Entry-point of the game. Responsible for creating and starting a new
