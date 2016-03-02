@@ -11,23 +11,23 @@ public class Clock {
 	/**
 	 * The number of milliseconds that make up one cycle.
 	 */
-	private float millisPerCycle;
+	private float fMillisperSec;
 	
 	/**
 	 * The last time that the clock was updated (used for calculating the
 	 * delta time).
 	 */
-	private long lastUpdate;
+	private long lLastUpdate;
 	
 	/**
 	 * The number of cycles that have elapsed and have not yet been polled.
 	 */
-	private int elapsedCycles;
+	private int iElapsedCycles;
 	
 	/**
 	 * The amount of excess time towards the next elapsed cycle.
 	 */
-	private float excessCycles;
+	private float fExcessCycles;
 	
 	/**
 	 * Whether or not the clock is paused.
@@ -36,19 +36,19 @@ public class Clock {
 	
 	/**
 	 * Creates a new clock and sets it's cycles-per-second.
-	 * @param cyclesPerSecond The number of cycles that elapse per second.
+	 * @param fCyclesPerSecond The number of cycles that elapse per second.
 	 */
-	public Clock(float cyclesPerSecond) {
-		setCyclesPerSecond(cyclesPerSecond);
+	public Clock(float fCyclesPerSecond) {
+		setCyclesPerSecond(fCyclesPerSecond);
 		reset();
 	}
 	
 	/**
 	 * Sets the number of cycles that elapse per second.
-	 * @param cyclesPerSecond The number of cycles per second.
+	 * @param fCyclesPerSecond The number of cycles per second.
 	 */
-	public void setCyclesPerSecond(float cyclesPerSecond) {
-		this.millisPerCycle = (1.0f / cyclesPerSecond) * 1000;
+	public void setCyclesPerSecond(float fCyclesPerSecond) {
+		this.fMillisperSec = (1.0f / fCyclesPerSecond) * 1000;
 	}
 	
 	/**
@@ -57,9 +57,9 @@ public class Clock {
 	 * paused flag will be set to false.
 	 */
 	public void reset() {
-		this.elapsedCycles = 0;
-		this.excessCycles = 0.0f;
-		this.lastUpdate = getCurrentTime();
+		this.iElapsedCycles = 0;
+		this.fExcessCycles = 0.0f;
+		this.lLastUpdate = getCurrentTime();
 		this.isPaused = false;
 	}
 	
@@ -70,28 +70,36 @@ public class Clock {
 	 * nasty surprises with the delta time.
 	 */
 	public void update() {
+            
 		//Get the current time and calculate the delta time.
 		long currUpdate = getCurrentTime();
-		float delta = (float)(currUpdate - lastUpdate) + excessCycles;
+                
+		float delta = (float)(currUpdate - lLastUpdate) + fExcessCycles;
 		
-		//Update the number of elapsed and excess ticks if we're not paused.
+		//Update the number of elapsed and excess ticks if we're not 
+                //paused.
+                
 		if(!isPaused) {
-			this.elapsedCycles += (int)Math.floor(delta / millisPerCycle);
-			this.excessCycles = delta % millisPerCycle;
+                    
+			this.iElapsedCycles += 
+                                (int)Math.floor(delta / fMillisperSec);
+                        
+			this.fExcessCycles = delta % fMillisperSec;
 		}
 		
 		//Set the last update time for the next update cycle.
-		this.lastUpdate = currUpdate;
+		this.lLastUpdate = currUpdate;
 	}
 	
 	/**
 	 * Pauses or unpauses the clock. While paused, a clock will not update
-	 * elapsed cycles or cycle excess, though the {@code update} method should
+	 * elapsed cycles or cycle excess, though the {@code update} method 
+         * should
 	 * still be called every frame to prevent issues.
-	 * @param paused Whether or not to pause this clock.
+	 * @param bPaused Whether or not to pause this clock.
 	 */
-	public void setPaused(boolean paused) {
-		this.isPaused = paused;
+	public void setPaused(boolean bPaused) {
+		this.isPaused = bPaused;
 	}
 	
 	/**
@@ -99,6 +107,7 @@ public class Clock {
 	 * @return Whether or not this clock is paused.
 	 */
 	public boolean isPaused() {
+            
 		return isPaused;
 	}
 	
@@ -109,8 +118,11 @@ public class Clock {
 	 * @see peekElapsedCycle
 	 */
 	public boolean hasElapsedCycle() {
-		if(elapsedCycles > 0) {
-			this.elapsedCycles--;
+            
+		if(iElapsedCycles > 0) {
+                    
+			this.iElapsedCycles--;
+                        
 			return true;
 		}
 		return false;
@@ -124,7 +136,8 @@ public class Clock {
 	 * @see hasElapsedCycle
 	 */
 	public boolean peekElapsedCycle() {
-		return (elapsedCycles > 0);
+            
+		return (iElapsedCycles > 0);
 	}
 	
 	/**
@@ -135,6 +148,7 @@ public class Clock {
 	 * @return The current time in milliseconds.
 	 */
 	private static final long getCurrentTime() {
+            
 		return (System.nanoTime() / 1000000L);
 	}
 

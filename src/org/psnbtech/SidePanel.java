@@ -79,12 +79,14 @@ public class SidePanel extends JPanel {
 	/**
 	 * The small font.
 	 */
-	private static final Font SMALL_FONT = new Font("Tahoma", Font.BOLD, 11);
+	private static final Font SMALL_FONT = new Font("Tahoma", Font.BOLD, 
+                11);
 	
 	/**
 	 * The large font.
 	 */
-	private static final Font LARGE_FONT = new Font("Tahoma", Font.BOLD, 13);
+	private static final Font LARGE_FONT = new Font("Tahoma", Font.BOLD, 
+                13);
 	
 	/**
 	 * The color to draw the text and preview box in.
@@ -94,99 +96,140 @@ public class SidePanel extends JPanel {
 	/**
 	 * The Tetris instance.
 	 */
-	private Tetris tetris;
+	private Tetris tetTetis;
 	
 	/**
 	 * Creates a new SidePanel and sets it's display properties.
 	 * @param tetris The Tetris instance to use.
 	 */
 	public SidePanel(Tetris tetris) {
-		this.tetris = tetris;
+		this.tetTetis = tetris;
 		
 		setPreferredSize(new Dimension(200, BoardPanel.PANEL_HEIGHT));
 		setBackground(Color.BLACK);
 	}
 	
 	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void paintComponent(Graphics graGraphics) {
+		super.paintComponent(graGraphics);
 		
 		//Set the color for drawing.
-		g.setColor(DRAW_COLOR);
+		graGraphics.setColor(DRAW_COLOR);
 		
 		/*
 		 * This variable stores the current y coordinate of the string.
-		 * This way we can re-order, add, or remove new strings if necessary
-		 * without needing to change the other strings.
+		 * This way we can re-order, add, or remove new strings if 
+		 * necessary without needing to change the other strings.
 		 */
-		int offset;
+		int iOffset;
 		
 		/*
 		 * Draw the "Stats" category.
 		 */
-		g.setFont(LARGE_FONT);
-		g.drawString("Stats", SMALL_INSET, offset = STATS_INSET);
-		g.setFont(SMALL_FONT);
-		g.drawString("Level: " + tetris.getLevel(), LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("Score: " + tetris.getScore(), LARGE_INSET, offset += TEXT_STRIDE);
+		graGraphics.setFont(LARGE_FONT);
+                
+		graGraphics.drawString("Stats", SMALL_INSET, 
+                        iOffset = STATS_INSET);
+                
+		graGraphics.setFont(SMALL_FONT);
+                
+		graGraphics.drawString("Level: " + tetTetis.getLevel(), 
+                        LARGE_INSET, iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("Score: " + tetTetis.getScore(), 
+                        LARGE_INSET, iOffset += TEXT_STRIDE);
 		
 		/*
 		 * Draw the "Controls" category.
 		 */
-		g.setFont(LARGE_FONT);
-		g.drawString("Controls", SMALL_INSET, offset = CONTROLS_INSET);
-		g.setFont(SMALL_FONT);
-		g.drawString("A - Move Left", LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("D - Move Right", LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("Q - Rotate Anticlockwise", LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("E - Rotate Clockwise", LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("S - Drop", LARGE_INSET, offset += TEXT_STRIDE);
-		g.drawString("P - Pause Game", LARGE_INSET, offset += TEXT_STRIDE);
-                g.drawString("G - Save Game", LARGE_INSET, offset += TEXT_STRIDE);
-                g.drawString("L - Load Game", LARGE_INSET, offset += TEXT_STRIDE);
+		graGraphics.setFont(LARGE_FONT);
+                
+		graGraphics.drawString("Controls", SMALL_INSET, 
+                        iOffset = CONTROLS_INSET);
+                
+		graGraphics.setFont(SMALL_FONT);
+                
+		graGraphics.drawString("A - Move Left", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("D - Move Right", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("Q - Rotate Anticlockwise", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("E - Rotate Clockwise", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("S - Drop", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+		graGraphics.drawString("P - Pause Game", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+                graGraphics.drawString("G - Save Game", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
+                
+                graGraphics.drawString("L - Load Game", LARGE_INSET, 
+                        iOffset += TEXT_STRIDE);
 		
 		/*
 		 * Draw the next piece preview box.
 		 */
-		g.setFont(LARGE_FONT);
-		g.drawString("Next Piece:", SMALL_INSET, 70);
-		g.drawRect(SQUARE_CENTER_X - SQUARE_SIZE, SQUARE_CENTER_Y -
-                        SQUARE_SIZE, SQUARE_SIZE * 2, SQUARE_SIZE * 2);
+                
+		graGraphics.setFont(LARGE_FONT);
+                
+		graGraphics.drawString("Next Piece:", SMALL_INSET, 70);
+                
+		graGraphics.drawRect(SQUARE_CENTER_X - SQUARE_SIZE, 
+                        SQUARE_CENTER_Y - SQUARE_SIZE, SQUARE_SIZE * 2, 
+                        SQUARE_SIZE * 2);
 		
 		/*
 		 * Draw a preview of the next piece that will be spawned. The code is pretty much
 		 * identical to the drawing code on the board, just smaller and centered, rather
 		 * than constrained to a grid.
 		 */
-		TileType type = tetris.getNextPieceType();
-		if(!tetris.isGameOver() && type != null) {
+		TileType tilType = tetTetis.getNextPieceType();
+                
+		if(!tetTetis.isGameOver() && tilType != null) {
 			/*
 			 * Get the size properties of the current piece.
 			 */
-			int cols = type.getCols();
-			int rows = type.getRows();
-			int dimension = type.getDimension();
+			int iCols = tilType.getCols();
+			int iRows = tilType.getRows();
+			int iDimension = tilType.getDimension();
 		
 			/*
 			 * Calculate the top left corner (origin) of the piece.
 			 */
-			int startX = (SQUARE_CENTER_X - (cols * TILE_SIZE / 2));
-			int startY = (SQUARE_CENTER_Y - (rows * TILE_SIZE / 2));
+			int iStartX = (SQUARE_CENTER_X - 
+                                (iCols * TILE_SIZE / 2));
+                        
+			int iStartY = (SQUARE_CENTER_Y - 
+                                (iRows * TILE_SIZE / 2));
 		
 			/*
 			 * Get the insets for the preview. The default
 			 * rotation is used for the preview, so we just use 0.
 			 */
-			int top = type.getTopInset(0);
-			int left = type.getLeftInset(0);
+			int iTop = tilType.getTopInset(0);
+                        
+			int iLeft = tilType.getLeftInset(0);
 		
 			/*
-			 * Loop through the piece and draw it's tiles onto the preview.
+			 * Loop through the piece and draw it's tiles onto 
+                         * the preview.
 			 */
-			for(int row = 0; row < dimension; row++) {
-				for(int col = 0; col < dimension; col++) {
-					if(type.isTile(col, row, 0)) {
-						drawTile(type, startX + ((col - left) * TILE_SIZE), startY + ((row - top) * TILE_SIZE), g);
+			for(int iRow = 0; iRow < iDimension; iRow++) {
+				for(int iCol = 0; iCol < iDimension; iCol++) {
+					if(tilType.isTile(iCol, iRow, 0)) {
+						drawTile(tilType, iStartX + 
+                                                        ((iCol - iLeft) * 
+                                                                TILE_SIZE), 
+                                                        iStartY + ((iRow - iTop) 
+                                                                * TILE_SIZE), 
+                                                        graGraphics);
 					}
 				}
 			}
@@ -195,34 +238,47 @@ public class SidePanel extends JPanel {
 	
 	/**
 	 * Draws a tile onto the preview window.
-	 * @param type The type of tile to draw.
-	 * @param x The x coordinate of the tile.
-	 * @param y The y coordinate of the tile.
-	 * @param g The graphics object.
+	 * @param tilType The type of tile to draw.
+	 * @param iX The x coordinate of the tile.
+	 * @param iY The y coordinate of the tile.
+	 * @param graGraphics The graphics object.
 	 */
-	private void drawTile(TileType type, int x, int y, Graphics g) {
+	private void drawTile(TileType tilType, int iX, int iY, 
+                Graphics graGraphics) {
 		/*
 		 * Fill the entire tile with the base color.
 		 */
-		g.setColor(type.getBaseColor());
-		g.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+		graGraphics.setColor(tilType.getBaseColor());
+                
+		graGraphics.fillRect(iX, iY, TILE_SIZE, TILE_SIZE);
 		
 		/*
-		 * Fill the bottom and right edges of the tile with the dark shading color.
+		 * Fill the bottom and right edges of the tile with the dark 
+                 * shading color.
 		 */
-		g.setColor(type.getDarkColor());
-		g.fillRect(x, y + TILE_SIZE - SHADE_WIDTH, TILE_SIZE, SHADE_WIDTH);
-		g.fillRect(x + TILE_SIZE - SHADE_WIDTH, y, SHADE_WIDTH, TILE_SIZE);
+                
+		graGraphics.setColor(tilType.getDarkColor());
+                
+		graGraphics.fillRect(iX, iY + TILE_SIZE - SHADE_WIDTH, 
+                        TILE_SIZE, SHADE_WIDTH);
+                
+		graGraphics.fillRect(iX + TILE_SIZE - SHADE_WIDTH, iY, 
+                        SHADE_WIDTH, TILE_SIZE);
 		
 		/*
-		 * Fill the top and left edges with the light shading. We draw a single line
-		 * for each row or column rather than a rectangle so that we can draw a nice
-		 * looking diagonal where the light and dark shading meet.
+		 * Fill the top and left edges with the light shading. 
+		 *  We draw a single line for each row or column rather than 
+		 *  a rectangle so that we can draw a nice looking 
+                 * diagonal where the light and dark shading meet.
 		 */
-		g.setColor(type.getLightColor());
-		for(int i = 0; i < SHADE_WIDTH; i++) {
-			g.drawLine(x, y + i, x + TILE_SIZE - i - 1, y + i);
-			g.drawLine(x + i, y, x + i, y + TILE_SIZE - i - 1);
+		graGraphics.setColor(tilType.getLightColor());
+		for(int iI = 0; iI < SHADE_WIDTH; iI++) {
+                    
+			graGraphics.drawLine(iX, iY + iI, iX + 
+                                TILE_SIZE - iI - 1, iY + iI);
+                        
+			graGraphics.drawLine(iX + iI, iY, iX 
+                                + iI, iY + TILE_SIZE - iI - 1);
 		}
 	}
 	

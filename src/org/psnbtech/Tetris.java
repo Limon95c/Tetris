@@ -33,12 +33,12 @@ public class Tetris extends JFrame {
 	/**
 	 * The BoardPanel instance.
 	 */
-	private BoardPanel board;
+	private BoardPanel bplBoardPanel;
 	
 	/**
 	 * The SidePanel instance.
 	 */
-	private SidePanel side;
+	private SidePanel splSidePanel;
 	
 	/**
 	 * Whether or not the game is paused.
@@ -57,61 +57,61 @@ public class Tetris extends JFrame {
 	private boolean isGameOver;
 	
 	/**
-	 * The current level we're on.
+	 * The current iLevel we're on.
 	 */
-	private int level;
+	private int iLevel;
 	
 	/**
-	 * The current score.
+	 * The current iScore.
 	 */
-	private int score;
+	private int iScore;
 	
 	/**
 	 * The random number generator. This is used to
 	 * spit out pieces randomly.
 	 */
-	private Random random;
+	private Random iRandom;
 	
 	/**
 	 * The clock that handles the update logic.
 	 */
-	private Clock logicTimer;
+	private Clock clkLogicTimer;
 				
 	/**
 	 * The current type of tile.
 	 */
-	private TileType currentType;
+	private TileType tilCurrentType;
 	
 	/**
 	 * The next type of tile.
 	 */
-	private TileType nextType;
+	private TileType tilNextType;
 		
 	/**
 	 * The current column of our tile.
 	 */
-	private int currentCol;
+	private int iCurrentCol;
 	
 	/**
 	 * The current row of our tile.
 	 */
-	private int currentRow;
+	private int iCurrentRow;
 	
 	/**
 	 * The current rotation of our tile.
 	 */
-	private int currentRotation;
+	private int iCurrentRotation;
 		
 	/**
 	 * Ensures that a certain amount of time passes after a piece is
 	 * spawned before we can drop it.
 	 */
-	private int dropCooldown;
+	private int iDropCooldown;
 	
 	/**
 	 * The speed of the game.
 	 */
-	private float gameSpeed;
+	private float fGameSpeed;
 		
 	/**
 	 * Creates a new Tetris instance. Sets up the window's properties,
@@ -122,21 +122,26 @@ public class Tetris extends JFrame {
 		 * Set the basic properties of the window.
 		 */
 		super("Tetris");
+                
 		setLayout(new BorderLayout());
+                
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+                
 		setResizable(false);
 		
 		/*
 		 * Initialize the BoardPanel and SidePanel instances.
 		 */
-		this.board = new BoardPanel(this);
-		this.side = new SidePanel(this);
+		this.bplBoardPanel = new BoardPanel(this);
+                
+		this.splSidePanel = new SidePanel(this);
 		
 		/*
 		 * Add the BoardPanel and SidePanel instances to the window.
 		 */
-		add(board, BorderLayout.CENTER);
-		add(side, BorderLayout.EAST);
+		add(bplBoardPanel, BorderLayout.CENTER);
+                
+		add(splSidePanel, BorderLayout.EAST);
 		
 		/*
 		 * Adds a custom anonymous KeyListener to the frame.
@@ -144,94 +149,120 @@ public class Tetris extends JFrame {
 		addKeyListener(new KeyAdapter() {
 			
 			@Override
-			public void keyPressed(KeyEvent e) {
+			public void keyPressed(KeyEvent keyEvent) {
 								
-				switch(e.getKeyCode()) {
+				switch(keyEvent.getKeyCode()) {
 				
 				/*
-				 * Drop - When pressed, we check to see that the game is not
-				 * paused and that there is no drop cooldown, then set the
-				 * logic timer to run at a speed of 25 cycles per second.
+				 * Drop - When pressed, we check to see that the 
+				 * game is not paused and that there is no drop 
+				 * cooldown, then set the logic timer to run at
+                                 * a speed of 25 cycles per second.
 				 */
 				case KeyEvent.VK_S:
-					if(!isPaused && dropCooldown == 0) {
-						logicTimer.setCyclesPerSecond(25.0f);
+					if(!isPaused && iDropCooldown == 0) {
+                                            
+					clkLogicTimer.setCyclesPerSecond(25.0f);
+                                        
 					}
 					break;
 					
 				/*
-				 * Move Left - When pressed, we check to see that the game is
-				 * not paused and that the position to the left of the current
-				 * position is valid. If so, we decrement the current column by 1.
+				 * Move Left - When pressed, we check to see 
+				 * that the game is not paused and that the 
+                                 * position to the left of the current position 
+				 * is valid. If so, we decrement the current 
+                                 * column by 1.
 				 */
 				case KeyEvent.VK_A:
 					if(!isPaused &&
-                                            board.isValidAndEmpty(currentType,
-                                                    currentCol - 1, currentRow,
-                                                    currentRotation)) {
-						currentCol--;
+                                            bplBoardPanel.isValidAndEmpty(
+                                                    tilCurrentType,
+                                                    iCurrentCol - 1, 
+                                                    iCurrentRow,
+                                                    iCurrentRotation)) {
+                                            
+						iCurrentCol--;
 					}
 					break;
 					
 				/*
-				 * Move Right - When pressed, we check to see that the game is
-				 * not paused and that the position to the right of the current
-				 * position is valid. If so, we increment the current column by 1.
+				 * Move Right - When pressed, we check to see 
+				 * that the game is not paused and that the 
+				 * position to the right of the current
+                                 * position is valid. If so, we increment the 
+                                 * current column by 1.
 				 */
 				case KeyEvent.VK_D:
 					if(!isPaused &&
-                                            board.isValidAndEmpty(currentType,
-                                                    currentCol + 1, currentRow,
-                                                    currentRotation)) {
-						currentCol++;
+                                            bplBoardPanel.isValidAndEmpty(
+                                                    tilCurrentType,
+                                                    iCurrentCol + 1, 
+                                                    iCurrentRow,
+                                                    iCurrentRotation)) {
+                                            
+						iCurrentCol++;
 					}
 					break;
 					
 				/*
-				 * Rotate Anticlockwise - When pressed, check to see that the game is not paused
-				 * and then attempt to rotate the piece anticlockwise. Because of the size and
-				 * complexity of the rotation code, as well as it's similarity to clockwise
-				 * rotation, the code for rotating the piece is handled in another method.
+				 * Rotate Anticlockwise - When pressed, check to 
+				 *  see that the game is not paused and then 
+				 * attempt to rotate the piece anticlockwise. 
+				 * Because of the size and complexity of the
+                                 * rotation code, as well as it's similarity to
+                                 * clockwise rotation, the code for rotating 
+                                 * the piece is handled in another method.
 				 */
 				case KeyEvent.VK_Q:
 					if(!isPaused) {
-						rotatePiece((currentRotation ==
+						rotatePiece((iCurrentRotation ==
                                                         0) ? 3 :
-                                                        currentRotation - 1);
+                                                        iCurrentRotation - 1);
 					}
 					break;
 				
 				/*
-			     * Rotate Clockwise - When pressed, check to see that the game is not paused
-				 * and then attempt to rotate the piece clockwise. Because of the size and
-				 * complexity of the rotation code, as well as it's similarity to anticlockwise
-				 * rotation, the code for rotating the piece is handled in another method.
+                                 * Rotate Clockwise - When pressed, check to 
+				 * see that the game is not paused and then 
+				 * attempt to rotate the piece clockwise. 
+				 * Because of the size and complexity of the
+                                 * rotation code, as well as it's similarity to
+                                 * anticlockwise rotation, the code for rotating
+                                 * the piece is handled in another method.
 				 */
 				case KeyEvent.VK_E:
 					if(!isPaused) {
-						rotatePiece((currentRotation
+						rotatePiece((iCurrentRotation
                                                         == 3) ? 0 :
-                                                        currentRotation + 1);
+                                                        iCurrentRotation + 1);
 					}
 					break;
 					
 				/*
-				 * Pause Game - When pressed, check to see that we're currently playing a game.
-				 * If so, toggle the pause variable and update the logic timer to reflect this
-				 * change, otherwise the game will execute a huge number of updates and essentially
-				 * cause an instant game over when we unpause if we stay paused for more than a
+				 * Pause Game - When pressed, check to see that 
+				 * we're currently playing a game. If so, toggle
+                                 * the pause variable and update the logic timer
+                                 * to reflect this change, otherwise the game 
+				 * will execute a huge number of updates and 
+				 * essentially cause an instant game over when
+                                 * we unpause if we stay paused for more than a
 				 * minute or so.
 				 */
 				case KeyEvent.VK_P:
+                                    
 					if(!isGameOver && !isNewGame) {
-						isPaused = !isPaused;
-						logicTimer.setPaused(isPaused);
+                                            
+                                            isPaused = !isPaused;
+                                                
+                                            clkLogicTimer.setPaused(isPaused);
 					}
 					break;
 				
 				/*
-				 * Start Game - When pressed, check to see that we're in either a game over or new
-				 * game state. If so, reset the game.
+				 * Start Game - When pressed, check to see that 
+				 * we're in either a game over or new game
+                                 * state. If so, reset the game.
 				 */
 				case KeyEvent.VK_ENTER:
 					if(isGameOver || isNewGame) {
@@ -243,19 +274,23 @@ public class Tetris extends JFrame {
 			}
 			
 			@Override
-			public void keyReleased(KeyEvent e) {
+			public void keyReleased(KeyEvent keyEvent) {
 				
-				switch(e.getKeyCode()) {
+				switch(keyEvent.getKeyCode()) {
 				
 				/*
-				 * Drop - When released, we set the speed of the logic timer
-				 * back to whatever the current game speed is and clear out
-				 * any cycles that might still be elapsed.
+				 * Drop - When released, we set the speed of 
+				 * the logic timer back to whatever the current 
+				 * game speed is and clear out any cycles that 
+                                 * might still be elapsed.
 				 */
 				case KeyEvent.VK_S:
-					logicTimer.setCyclesPerSecond(gameSpeed);
-					logicTimer.reset();
-					break;
+                                    
+                                    clkLogicTimer.setCyclesPerSecond(fGameSpeed);
+                                        
+                                    clkLogicTimer.reset();
+                                    
+                                    break;
 				}
 				
 			}
@@ -263,50 +298,61 @@ public class Tetris extends JFrame {
 		});
 		
 		/*
-		 * Here we resize the frame to hold the BoardPanel and SidePanel instances,
-		 * center the window on the screen, and show it to the user.
+		 * Here we resize the frame to hold the BoardPanel and SidePanel 
+		 * instances, center the window on the screen, and show it to
+                 * the user. 
 		 */
+                
 		pack();
+                
 		setLocationRelativeTo(null);
+                
 		setVisible(true);
 	}
 	
 	/**
-	 * Starts the game running. Initializes everything and enters the game loop.
+	 * Starts the game running. Initializes everything and enters the game 
+         * loop.
 	 */
 	private void startGame() {
 		/*
-		 * Initialize our random number generator, logic timer, and new game variables.
+		 * Initialize our random number generator, logic timer, and new game 
+                 * variables.
 		 */
-		this.random = new Random();
+		this.iRandom = new Random();
 		this.isNewGame = true;
-		this.gameSpeed = 1.0f;
+		this.fGameSpeed = 1.0f;
 		
 		/*
 		 * Setup the timer to keep the game from running before the user presses enter
 		 * to start it.
 		 */
-		this.logicTimer = new Clock(gameSpeed);
-		logicTimer.setPaused(true);
+		this.clkLogicTimer = new Clock(fGameSpeed);
+                
+		clkLogicTimer.setPaused(true);
 		
 		while(true) {
 			//Get the time that the frame started.
 			long start = System.nanoTime();
 			
 			//Update the logic timer.
-			logicTimer.update();
+			clkLogicTimer.update();
 			
 			/*
-			 * If a cycle has elapsed on the timer, we can update the game and
+			 * If a cycle has elapsed on the timer, we can update 
+                         * the game and
 			 * move our current piece down.
 			 */
-			if(logicTimer.hasElapsedCycle()) {
+                        
+			if(clkLogicTimer.hasElapsedCycle()) {
+                            
 				updateGame();
 			}
 		
 			//Decrement the drop cool down if necessary.
-			if(dropCooldown > 0) {
-				dropCooldown--;
+			if(iDropCooldown > 0) {
+                            
+				iDropCooldown--;
 			}
 			
 			//Display the window to the user.
@@ -316,10 +362,15 @@ public class Tetris extends JFrame {
 			 * Sleep to cap the framerate.
 			 */
 			long delta = (System.nanoTime() - start) / 1000000L;
+                        
 			if(delta < FRAME_TIME) {
+                            
 				try {
+                                    
 					Thread.sleep(FRAME_TIME - delta);
+                                        
 				} catch(Exception e) {
+                                    
 					e.printStackTrace();
 				}
 			}
@@ -331,48 +382,64 @@ public class Tetris extends JFrame {
 	 */
 	private void updateGame() {
 		/*
-		 * Check to see if the piece's position can move down to the next row.
+		 * Check to see if the piece's position can move down to the 
+                 * next row.
 		 */
-		if(board.isValidAndEmpty(currentType, currentCol, currentRow + 1, currentRotation)) {
+		if(bplBoardPanel.isValidAndEmpty(tilCurrentType, iCurrentCol, 
+                        iCurrentRow + 1, iCurrentRotation)) {
+                    
 			//Increment the current row if it's safe to do so.
-			currentRow++;
+                        
+			iCurrentRow++;
 		} else {
 			/*
-			 * We've either reached the bottom of the board, or landed on another piece, so
+			 * We've either reached the bottom of the board, or 
+                         * landed on another piece, so
 			 * we need to add the piece to the board.
 			 */
-			board.addPiece(currentType, currentCol, currentRow, currentRotation);
+			bplBoardPanel.addPiece(tilCurrentType, iCurrentCol, 
+                                iCurrentRow, iCurrentRotation);
 			
 			/*
-			 * Check to see if adding the new piece resulted in any cleared lines. If so,
-			 * increase the player's score. (Up to 4 lines can be cleared in a single go;
-			 * [1 = 100pts, 2 = 200pts, 3 = 400pts, 4 = 800pts]).
+			 * Check to see if adding the new piece resulted in 
+			 * any cleared lines. If so, increase the player's 
+			 * iScore. (Up to 4 lines can be cleared in a single
+                         * go; [1 = 100pts, 2 = 200pts, 3 = 400pts, 4 = 800pts])
 			 */
-			int cleared = board.checkLines();
-			if(cleared > 0) {
-				score += 50 << cleared;
+                        
+			int iCleared = bplBoardPanel.checkLines();
+                        
+			if(iCleared > 0) {
+                            
+				iScore += 50 << iCleared;
 			}
 			
 			/*
-			 * Increase the speed slightly for the next piece and update the game's timer
+			 * Increase the speed slightly for the next piece and 
+                         * update the game's timer
 			 * to reflect the increase.
 			 */
-			gameSpeed += 0.035f;
-			logicTimer.setCyclesPerSecond(gameSpeed);
-			logicTimer.reset();
+			fGameSpeed += 0.035f;
+                        
+			clkLogicTimer.setCyclesPerSecond(fGameSpeed);
+                        
+			clkLogicTimer.reset();
 			
 			/*
-			 * Set the drop cooldown so the next piece doesn't automatically come flying
-			 * in from the heavens immediately after this piece hits if we've not reacted
-			 * yet. (~0.5 second buffer).
+			 * Set the drop cooldown so the next piece doesn't 
+			 * automatically come flying in from the heavens 
+			 * immediately after this piece hits if we've not
+                         * reacted yet. (~0.5 second buffer).
 			 */
-			dropCooldown = 25;
+                        
+			iDropCooldown = 25;
 			
 			/*
-			 * Update the difficulty level. This has no effect on the game, and is only
-			 * used in the "Level" string in the SidePanel.
+			 * Update the difficulty iLevel. This has no effect on 
+			 * the game, and is only used in the "Level" string
+                         * in the SidePanel. 
 			 */
-			level = (int)(gameSpeed * 1.70f);
+			iLevel = (int)(fGameSpeed * 1.70f);
 			
 			/*
 			 * Spawn a new piece to control.
@@ -385,8 +452,10 @@ public class Tetris extends JFrame {
 	 * Forces the BoardPanel and SidePanel to repaint.
 	 */
 	private void renderGame() {
-		board.repaint();
-		side.repaint();
+            
+		bplBoardPanel.repaint();
+                
+		splSidePanel.repaint();
 	}
 	
 	/**
@@ -394,15 +463,26 @@ public class Tetris extends JFrame {
 	 * of a new game.
 	 */
 	private void resetGame() {
-		this.level = 1;
-		this.score = 0;
-		this.gameSpeed = 1.0f;
-		this.nextType = TileType.values()[random.nextInt(TYPE_COUNT)];
+            
+		this.iLevel = 1;
+                
+		this.iScore = 0;
+                
+		this.fGameSpeed = 1.0f;
+                
+		this.tilNextType = TileType.values()
+                        [iRandom.nextInt(TYPE_COUNT)];
+                
 		this.isNewGame = false;
-		this.isGameOver = false;		
-		board.clear();
-		logicTimer.reset();
-		logicTimer.setCyclesPerSecond(gameSpeed);
+                
+		this.isGameOver = false;	
+                
+		bplBoardPanel.clear();
+                
+		clkLogicTimer.reset();
+                
+		clkLogicTimer.setCyclesPerSecond(fGameSpeed);
+                
 		spawnPiece();
 	}
 		
@@ -411,76 +491,113 @@ public class Tetris extends JFrame {
 	 * values.
 	 */
 	private void spawnPiece() {
+            
 		/*
 		 * Poll the last piece and reset our position and rotation to
 		 * their default variables, then pick the next piece to use.
 		 */
-		this.currentType = nextType;
-		this.currentCol = currentType.getSpawnColumn();
-		this.currentRow = currentType.getSpawnRow();
-		this.currentRotation = 0;
-		this.nextType = TileType.values()[random.nextInt(TYPE_COUNT)];
+		this.tilCurrentType = tilNextType;
+                
+		this.iCurrentCol = tilCurrentType.getSpawnColumn();
+                
+		this.iCurrentRow = tilCurrentType.getSpawnRow();
+                
+		this.iCurrentRotation = 0;
+                
+		this.tilNextType = TileType.values()
+                        [iRandom.nextInt(TYPE_COUNT)];
 		
 		/*
-		 * If the spawn point is invalid, we need to pause the game and flag that we've lost
-		 * because it means that the pieces on the board have gotten too high.
+		 * If the spawn point is invalid, we need to pause the game and 
+		 * flag that we've lost because it means that the pieces on
+                 * the board have gotten too high. 
 		 */
-		if(!board.isValidAndEmpty(currentType, currentCol, currentRow, currentRotation)) {
+		if(!bplBoardPanel.isValidAndEmpty(tilCurrentType, iCurrentCol, 
+                        iCurrentRow, iCurrentRotation)) {
+                    
 			this.isGameOver = true;
-			logicTimer.setPaused(true);
+                        
+			clkLogicTimer.setPaused(true);
 		}		
 	}
 
 	/**
 	 * Attempts to set the rotation of the current piece to newRotation.
-	 * @param newRotation The rotation of the new peice.
+	 * @param iNewRotation The rotation of the new peice.
 	 */
-	private void rotatePiece(int newRotation) {
+	private void rotatePiece(int iNewRotation) {
 		/*
-		 * Sometimes pieces will need to be moved when rotated to avoid clipping
-		 * out of the board (the I piece is a good example of this). Here we store
-		 * a temporary row and column in case we need to move the tile as well.
+		 * Sometimes pieces will need to be moved when rotated to 
+		 * avoid clipping out of the board (the I piece is a good 
+		 * example of this). Here we store a temporary row and column
+                 * in case we need to move the tile as well.
 		 */
-		int newColumn = currentCol;
-		int newRow = currentRow;
+		int iNewCol = iCurrentCol;
+		int iNewRow = iCurrentRow;
 		
 		/*
-		 * Get the insets for each of the sides. These are used to determine how
+		 * Get the insets for each of the sides. These are used to 
+                 * determine how
 		 * many empty rows or columns there are on a given side.
 		 */
-		int left = currentType.getLeftInset(newRotation);
-		int right = currentType.getRightInset(newRotation);
-		int top = currentType.getTopInset(newRotation);
-		int bottom = currentType.getBottomInset(newRotation);
+                
+		int iLeft = tilCurrentType.getLeftInset(iNewRotation);
+                
+		int iRight = tilCurrentType.getRightInset(iNewRotation);
+                
+		int iTop = tilCurrentType.getTopInset(iNewRotation);
+                
+		int iBottom = tilCurrentType.getBottomInset(iNewRotation);
 		
 		/*
-		 * If the current piece is too far to the left or right, move the piece away from the edges
-		 * so that the piece doesn't clip out of the map and automatically become invalid.
+		 * If the current piece is too far to the left or right, move
+                 * the piece away from the edges
+		 * so that the piece doesn't clip out of the map and
+                 * automatically become invalid.
 		 */
-		if(currentCol < -left) {
-			newColumn -= currentCol - left;
-		} else if(currentCol + currentType.getDimension() - right >= BoardPanel.COL_COUNT) {
-			newColumn -= (currentCol + currentType.getDimension() - right) - BoardPanel.COL_COUNT + 1;
+                
+		if(iCurrentCol < -iLeft) {
+                    
+			iNewCol -= iCurrentCol - iLeft;
+                        
+		} else if(iCurrentCol + tilCurrentType.getDimension() - iRight 
+                        >= BoardPanel.COL_COUNT) {
+                    
+			iNewCol -= (iCurrentCol + tilCurrentType.getDimension() 
+                                - iRight) - BoardPanel.COL_COUNT + 1;
 		}
 		
 		/*
-		 * If the current piece is too far to the top or bottom, move the piece away from the edges
-		 * so that the piece doesn't clip out of the map and automatically become invalid.
+		 * If the current piece is too far to the top or bottom, move
+                 * the piece away from the edges
+		 * so that the piece doesn't clip out of the map and
+                 * automatically become invalid.
 		 */
-		if(currentRow < -top) {
-			newRow -= currentRow - top;
-		} else if(currentRow + currentType.getDimension() - bottom >= BoardPanel.ROW_COUNT) {
-			newRow -= (currentRow + currentType.getDimension() - bottom) - BoardPanel.ROW_COUNT + 1;
+                
+		if(iCurrentRow < -iTop) {
+                    
+			iNewRow -= iCurrentRow - iTop;
+                        
+		} else if(iCurrentRow + tilCurrentType.getDimension() - iBottom 
+                        >= BoardPanel.ROW_COUNT) {
+                    
+			iNewRow -= (iCurrentRow + tilCurrentType.getDimension() 
+                                - iBottom) - BoardPanel.ROW_COUNT + 1;
 		}
 		
 		/*
-		 * Check to see if the new position is acceptable. If it is, update the rotation and
+		 * Check to see if the new position is acceptable.
+                 * If it is, update the rotation and
 		 * position of the piece.
 		 */
-		if(board.isValidAndEmpty(currentType, newColumn, newRow, newRotation)) {
-			currentRotation = newRotation;
-			currentRow = newRow;
-			currentCol = newColumn;
+		if(bplBoardPanel.isValidAndEmpty(tilCurrentType, iNewCol, 
+                        iNewRow, iNewRotation)) {
+                    
+			iCurrentRotation = iNewRotation;
+                        
+			iCurrentRow = iNewRow;
+                        
+			iCurrentCol = iNewCol;
 		}
 	}
 	
@@ -489,6 +606,7 @@ public class Tetris extends JFrame {
 	 * @return Whether or not the game is paused.
 	 */
 	public boolean isPaused() {
+            
 		return isPaused;
 	}
 	
@@ -497,6 +615,7 @@ public class Tetris extends JFrame {
 	 * @return Whether or not the game is over.
 	 */
 	public boolean isGameOver() {
+            
 		return isGameOver;
 	}
 	
@@ -505,23 +624,25 @@ public class Tetris extends JFrame {
 	 * @return Whether or not this is a new game.
 	 */
 	public boolean isNewGame() {
+            
 		return isNewGame;
 	}
 	
 	/**
-	 * Gets the current score.
-	 * @return The score.
+	 * Gets the current iScore.
+	 * @return The iScore.
 	 */
 	public int getScore() {
-		return score;
+		return iScore;
 	}
 	
 	/**
-	 * Gets the current level.
-	 * @return The level.
+	 * Gets the current iLevel.
+	 * @return The iLevel.
 	 */
 	public int getLevel() {
-		return level;
+            
+		return iLevel;
 	}
 	
 	/**
@@ -529,7 +650,8 @@ public class Tetris extends JFrame {
 	 * @return The piece type.
 	 */
 	public TileType getPieceType() {
-		return currentType;
+            
+		return tilCurrentType;
 	}
 	
 	/**
@@ -537,7 +659,8 @@ public class Tetris extends JFrame {
 	 * @return The next piece.
 	 */
 	public TileType getNextPieceType() {
-		return nextType;
+            
+		return tilNextType;
 	}
 	
 	/**
@@ -545,7 +668,8 @@ public class Tetris extends JFrame {
 	 * @return The column.
 	 */
 	public int getPieceCol() {
-		return currentCol;
+            
+		return iCurrentCol;
 	}
 	
 	/**
@@ -553,7 +677,8 @@ public class Tetris extends JFrame {
 	 * @return The row.
 	 */
 	public int getPieceRow() {
-		return currentRow;
+            
+		return iCurrentRow;
 	}
 	
 	/**
@@ -561,7 +686,8 @@ public class Tetris extends JFrame {
 	 * @return The rotation.
 	 */
 	public int getPieceRotation() {
-		return currentRotation;
+            
+		return iCurrentRotation;
 	}
 
 	/**
@@ -570,7 +696,9 @@ public class Tetris extends JFrame {
 	 * @param args Unused.
 	 */
 	public static void main(String[] args) {
+            
 		Tetris tetris = new Tetris();
+                
 		tetris.startGame();
 	}
 

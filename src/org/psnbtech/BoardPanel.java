@@ -55,10 +55,11 @@ public class BoardPanel extends JPanel {
 	/**
 	 * The total number of rows that the board contains.
 	 */
-	public static final int ROW_COUNT = VISIBLE_ROW_COUNT + HIDDEN_ROW_COUNT;
+	public static final int ROW_COUNT = VISIBLE_ROW_COUNT + 
+                HIDDEN_ROW_COUNT;
 	
 	/**
-	 * The number of pixels that a tile takes up.
+	 * The number of pixels that a tilTile takes up.
 	 */
 	public static final int TILE_SIZE = 24;
 	
@@ -80,27 +81,31 @@ public class BoardPanel extends JPanel {
 	/**
 	 * The total width of the panel.
 	 */
-	public static final int PANEL_WIDTH = COL_COUNT * TILE_SIZE + BORDER_WIDTH * 2;
+	public static final int PANEL_WIDTH = COL_COUNT * TILE_SIZE + 
+                BORDER_WIDTH * 2;
 	
 	/**
 	 * The total height of the panel.
 	 */
-	public static final int PANEL_HEIGHT = VISIBLE_ROW_COUNT * TILE_SIZE + BORDER_WIDTH * 2;
+	public static final int PANEL_HEIGHT = VISIBLE_ROW_COUNT * TILE_SIZE + 
+                BORDER_WIDTH * 2;
 	
 	/**
 	 * The larger font to display.
 	 */
-	private static final Font LARGE_FONT = new Font("Tahoma", Font.BOLD, 16);
+	private static final Font LARGE_FONT = new Font("Tahoma", 
+                Font.BOLD, 16);
 
 	/**
 	 * The smaller font to display.
 	 */
-	private static final Font SMALL_FONT = new Font("Tahoma", Font.BOLD, 12);
+	private static final Font SMALL_FONT = new Font("Tahoma", 
+                Font.BOLD, 12);
 	
 	/**
 	 * The Tetris instance.
 	 */
-	private Tetris tetris;
+	private Tetris tetTetris;
 	
 	/**
 	 * The tiles that make up the board.
@@ -112,7 +117,7 @@ public class BoardPanel extends JPanel {
 	 * @param tetris The Tetris instance to use.
 	 */
 	public BoardPanel(Tetris tetris) {
-		this.tetris = tetris;
+		this.tetTetris = tetris;
 		this.tiles = new TileType[ROW_COUNT][COL_COUNT];
 		
 		setPreferredSize(new Dimension(PANEL_WIDTH, PANEL_HEIGHT));
@@ -124,45 +129,54 @@ public class BoardPanel extends JPanel {
 	 */
 	public void clear() {
 		/*
-		 * Loop through every tile index and set it's value
+		 * Loop through every tilTile index and set it's value
 		 * to null to clear the board.
 		 */
-		for(int i = 0; i < ROW_COUNT; i++) {
-			for(int j = 0; j < COL_COUNT; j++) {
-				tiles[i][j] = null;
+		for(int iI = 0; iI < ROW_COUNT; iI++) {
+			for(int iJ = 0; iJ < COL_COUNT; iJ++) {
+				tiles[iI][iJ] = null;
 			}
 		}
 	}
 	
 	/**
 	 * Determines whether or not a piece can be placed at the coordinates.
-	 * @param type THe type of piece to use.
-	 * @param x The x coordinate of the piece.
-	 * @param y The y coordinate of the piece.
-	 * @param rotation The rotation of the piece.
+	 * @param tilType THe tilType of piece to use.
+	 * @param iX The iX coordinate of the piece.
+	 * @param iY The iY coordinate of the piece.
+	 * @param iRotation The iRotation of the piece.
 	 * @return Whether or not the position is valid.
 	 */
-	public boolean isValidAndEmpty(TileType type, int x, int y, int rotation) {
+	public boolean isValidAndEmpty(TileType tilType, int iX, int iY, 
+                int iRotation) {
 				
 		//Ensure the piece is in a valid column.
-		if(x < -type.getLeftInset(rotation) || x + type.getDimension() - type.getRightInset(rotation) >= COL_COUNT) {
+		if(iX < -tilType.getLeftInset(iRotation) || iX + 
+                        tilType.getDimension() - 
+                        tilType.getRightInset(iRotation) >= COL_COUNT) {
 			return false;
 		}
 		
-		//Ensure the piece is in a valid row.
-		if(y < -type.getTopInset(rotation) || y + type.getDimension() - type.getBottomInset(rotation) >= ROW_COUNT) {
+		//Ensure the piece is in a valid iRow.
+		if(iY < -tilType.getTopInset(iRotation) || iY + 
+                        tilType.getDimension() - 
+                        tilType.getBottomInset(iRotation) >= ROW_COUNT) {
 			return false;
 		}
 		
 		/*
-		 * Loop through every tile in the piece and see if it conflicts with an existing tile.
-		 * 
-		 * Note: It's fine to do this even though it allows for wrapping because we've already
+		 * Loop through every tilTile in the piece and see if it 
+		 * conflicts with an existing tilTile.
+                 *
+		 * Note: It's fine to do this even though it allows for wrapping 
+                 * because we've already
 		 * checked to make sure the piece is in a valid location.
 		 */
-		for(int col = 0; col < type.getDimension(); col++) {
-			for(int row = 0; row < type.getDimension(); row++) {
-				if(type.isTile(col, row, rotation) && isOccupied(x + col, y + row)) {
+		for(int iCol = 0; iCol < tilType.getDimension(); iCol++) {
+			for(int iRow = 0; iRow < tilType.getDimension(); 
+                                iRow++) {
+				if(tilType.isTile(iCol, iRow, iRotation) && 
+                                        isOccupied(iX + iCol, iY + iRow)) {
 					return false;
 				}
 			}
@@ -171,23 +185,24 @@ public class BoardPanel extends JPanel {
 	}
 	
 	/**
-	 * Adds a piece to the game board. Note: Doesn't check for existing pieces,
+	 * Adds a piece to the game board. Note: Doesn't check for existing 
+         * pieces,
 	 * and will overwrite them if they exist.
-	 * @param type The type of piece to place.
-	 * @param x The x coordinate of the piece.
-	 * @param y The y coordinate of the piece.
-	 * @param rotation The rotation of the piece.
+	 * @param tilType The tilType of piece to place.
+	 * @param iX The iX coordinate of the piece.
+	 * @param iY The iY coordinate of the piece.
+	 * @param iRotation The iRotation of the piece.
 	 */
-	public void addPiece(TileType type, int x, int y, int rotation) {
+	public void addPiece(TileType tilType, int iX, int iY, int iRotation) {
 		/*
-		 * Loop through every tile within the piece and add it
+		 * Loop through every tilTile within the piece and add it
 		 * to the board only if the boolean that represents that
-		 * tile is set to true.
+		 * tilTile is set to true.
 		 */
-		for(int col = 0; col < type.getDimension(); col++) {
-			for(int row = 0; row < type.getDimension(); row++) {
-				if(type.isTile(col, row, rotation)) {
-					setTile(col + x, row + y, type);
+		for(int col = 0; col < tilType.getDimension(); col++) {
+			for(int row = 0; row < tilType.getDimension(); row++) {
+				if(tilType.isTile(col, row, iRotation)) {
+					setTile(col + iX, row + iY, tilType);
 				}
 			}
 		}
@@ -199,47 +214,49 @@ public class BoardPanel extends JPanel {
 	 * @return The number of lines that were cleared.
 	 */
 	public int checkLines() {
-		int completedLines = 0;
+		int iCompletedLines = 0;
 		
 		/*
 		 * Here we loop through every line and check it to see if
 		 * it's been cleared or not. If it has, we increment the
-		 * number of completed lines and check the next row.
+		 * number of completed lines and check the next iRow.
 		 * 
 		 * The checkLine function handles clearing the line and
 		 * shifting the rest of the board down for us.
 		 */
-		for(int row = 0; row < ROW_COUNT; row++) {
-			if(checkLine(row)) {
-				completedLines++;
+		for(int iRow = 0; iRow < ROW_COUNT; iRow++) {
+			if(checkLine(iRow)) {
+				iCompletedLines++;
 			}
 		}
-		return completedLines;
+		return iCompletedLines;
 	}
 			
 	/**
-	 * Checks whether or not {@code row} is full.
-	 * @param line The row to check.
-	 * @return Whether or not this row is full.
+	 * Checks whether or not {@code iRow} is full.
+	 * @param iLines The iRow to check.
+	 * @return Whether or not this iRow is full.
 	 */
-	private boolean checkLine(int line) {
+	private boolean checkLine(int iLines) {
 		/*
-		 * Iterate through every column in this row. If any of them are
-		 * empty, then the row is not full.
+		 * Iterate through every column in this iRow. If any of them are
+		 * empty, then the iRow is not full.
 		 */
-		for(int col = 0; col < COL_COUNT; col++) {
-			if(!isOccupied(col, line)) {
+		for(int iCol = 0; iCol < COL_COUNT; iCol++) {
+			if(!isOccupied(iCol, iLines)) {
 				return false;
 			}
 		}
 		
 		/*
-		 * Since the line is filled, we need to 'remove' it from the game.
-		 * To do this, we simply shift every row above it down by one.
+		 * Since the iLines is filled, we need to 'remove' it from the 
+                 * game.
+		 * To do this, we simply shift every iRow above it down by one.
 		 */
-		for(int row = line - 1; row >= 0; row--) {
-			for(int col = 0; col < COL_COUNT; col++) {
-				setTile(col, row + 1, getTile(col, row));
+		for(int iRows = iLines - 1; iRows >= 0; iRows--) {
+			for(int iCols = 0; iCols < COL_COUNT; iCols++) {
+				setTile(iCols, iRows + 1, 
+                                        getTile(iCols, iRows));
 			}
 		}
 		return true;
@@ -247,119 +264,185 @@ public class BoardPanel extends JPanel {
 	
 	
 	/**
-	 * Checks to see if the tile is already occupied.
-	 * @param x The x coordinate to check.
-	 * @param y The y coordinate to check.
-	 * @return Whether or not the tile is occupied.
+	 * Checks to see if the tilTile is already occupied.
+	 * @param iX The x coordinate to check.
+	 * @param iY The y coordinate to check.
+	 * @return Whether or not the tilTile is occupied.
 	 */
-	private boolean isOccupied(int x, int y) {
-		return tiles[y][x] != null;
+	private boolean isOccupied(int iX, int iY) {
+		return tiles[iY][iX] != null;
 	}
 	
 	/**
-	 * Sets a tile located at the desired column and row.
-	 * @param x The column.
-	 * @param y The row.
-	 * @param type The value to set to the tile to.
+	 * Sets a tilTile located at the desired column and iRow.
+	 * @param iX The column.
+	 * @param iY The iRow.
+	 * @param tilType The value to set to the tilTile to.
 	 */
-	private void setTile(int  x, int y, TileType type) {
-		tiles[y][x] = type;
+	private void setTile(int  iX, int iY, TileType tilType) {
+		tiles[iY][iX] = tilType;
 	}
 		
 	/**
-	 * Gets a tile by it's column and row.
-	 * @param x The column.
-	 * @param y The row.
-	 * @return The tile.
+	 * Gets a tilTile by it's column and iRow.
+	 * @param iX The column.
+	 * @param iY The iRow.
+	 * @return The tilTile.
 	 */
-	private TileType getTile(int x, int y) {
-		return tiles[y][x];
+	private TileType getTile(int iX, int iY) {
+		return tiles[iY][iX];
 	}
 	
 	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
+	public void paintComponent(Graphics graGraphic) {
+		super.paintComponent(graGraphic);
 		
 		//This helps simplify the positioning of things.
-		g.translate(BORDER_WIDTH, BORDER_WIDTH);
+		graGraphic.translate(BORDER_WIDTH, BORDER_WIDTH);
 		
 		/*
-		 * Draw the board differently depending on the current game state.
+		 * Draw the board differently depending on the current game 
+                 * state.
 		 */
-		if(tetris.isPaused()) {
-			g.setFont(LARGE_FONT);
-			g.setColor(Color.WHITE);
+		if(tetTetris.isPaused()) {
+                    
+			graGraphic.setFont(LARGE_FONT);
+                        
+			graGraphic.setColor(Color.WHITE);
+                        
 			String msg = "PAUSED";
-			g.drawString(msg, CENTER_X - g.getFontMetrics().stringWidth(msg) / 2, CENTER_Y);
-		} else if(tetris.isNewGame() || tetris.isGameOver()) {
-			g.setFont(LARGE_FONT);
-			g.setColor(Color.WHITE);
+                        
+			graGraphic.drawString(msg, CENTER_X - 
+                                graGraphic.getFontMetrics().stringWidth(msg) 
+                                        / 2, CENTER_Y);
+                        
+		} else if(tetTetris.isNewGame() || tetTetris.isGameOver()) {
+                    
+			graGraphic.setFont(LARGE_FONT);
+                        
+			graGraphic.setColor(Color.WHITE);
 			
 			/*
-			 * Because both the game over and new game screens are nearly identical,
-			 * we can handle them together and just use a ternary operator to change
+			 * Because both the game over and new game screens 
+                         * are nearly identical,
+			 * we can handle them together and just use a 
+                         * ternary operator to change
 			 * the messages that are displayed.
 			 */
-			String msg = tetris.isNewGame() ? "TETRIS" : "GAME OVER";
-			g.drawString(msg, CENTER_X - g.getFontMetrics().stringWidth(msg) / 2, 150);
-			g.setFont(SMALL_FONT);
-			msg = "Press Enter to Play" + (tetris.isNewGame() ? "" : " Again");
-			g.drawString(msg, CENTER_X - g.getFontMetrics().stringWidth(msg) / 2, 300);
+			String sMsg = tetTetris.isNewGame() 
+                                ? "TETRIS" : "GAME OVER";
+                        
+			graGraphic.drawString(sMsg, CENTER_X - 
+                                graGraphic.getFontMetrics().stringWidth(sMsg) 
+                                        / 2, 150);
+                        
+			graGraphic.setFont(SMALL_FONT);
+                        
+			sMsg = "Press Enter to Play" + 
+                                (tetTetris.isNewGame() ? "" : " Again");
+                        
+			graGraphic.drawString(sMsg, CENTER_X - 
+                                graGraphic.getFontMetrics().stringWidth(sMsg) 
+                                        / 2, 300);
 		} else {
 			
 			/*
 			 * Draw the tiles onto the board.
 			 */
-			for(int x = 0; x < COL_COUNT; x++) {
-				for(int y = HIDDEN_ROW_COUNT; y < ROW_COUNT; y++) {
-					TileType tile = getTile(x, y);
-					if(tile != null) {
-						drawTile(tile, x * TILE_SIZE, (y - HIDDEN_ROW_COUNT) * TILE_SIZE, g);
+			for(int iX = 0; iX < COL_COUNT; iX++) {
+                            
+				for(int iY = HIDDEN_ROW_COUNT; 
+                                        iY < ROW_COUNT; iY++) {
+                                    
+					TileType tilTile = getTile(iX, iY);
+                                        
+					if(tilTile != null) {
+                                            
+						drawTile(tilTile, iX * TILE_SIZE, 
+                                                        (iY - HIDDEN_ROW_COUNT) 
+                                                                * TILE_SIZE, 
+                                                                    graGraphic);
 					}
 				}
 			}
 			
 			/*
-			 * Draw the current piece. This cannot be drawn like the rest of the
-			 * pieces because it's still not part of the game board. If it were
-			 * part of the board, it would need to be removed every frame which
-			 * would just be slow and confusing.
+			 * Draw the current piece. This cannot be drawn like the 
+                         * rest of the pieces because it's still not part of the 
+			 * game board. If it were part of the board, it would 
+			 * need to be removed every frame which would just be 
+			 * slow and confusing.
 			 */
-			TileType type = tetris.getPieceType();
-			int pieceCol = tetris.getPieceCol();
-			int pieceRow = tetris.getPieceRow();
-			int rotation = tetris.getPieceRotation();
+			TileType tilType = tetTetris.getPieceType();
+			int iPieceCol = tetTetris.getPieceCol();
+			int iPieceRow = tetTetris.getPieceRow();
+			int iRotation = tetTetris.getPieceRotation();
 			
 			//Draw the piece onto the board.
-			for(int col = 0; col < type.getDimension(); col++) {
-				for(int row = 0; row < type.getDimension(); row++) {
-					if(pieceRow + row >= 2 && type.isTile(col, row, rotation)) {
-						drawTile(type, (pieceCol + col) * TILE_SIZE, (pieceRow + row - HIDDEN_ROW_COUNT) * TILE_SIZE, g);
+			for(int iCol = 0; iCol < tilType.getDimension(); 
+                                iCol++) {
+                            
+				for(int iRows = 0; iRows < 
+                                        tilType.getDimension(); iRows++) {
+                                    
+					if(iPieceRow + iRows >= 2 && 
+                                                tilType.isTile(iCol, iRows, 
+                                                        iRotation)) {
+                                            
+						drawTile(tilType, 
+                                                        (iPieceCol + iCol) * 
+                                                                TILE_SIZE, 
+                                                        (iPieceRow + iRows - 
+                                                               HIDDEN_ROW_COUNT) 
+                                                                * TILE_SIZE, 
+                                                                graGraphic);
 					}
 				}
 			}
 			
 			/*
-			 * Draw the ghost (semi-transparent piece that shows where the current piece will land). I couldn't think of
-			 * a better way to implement this so it'll have to do for now. We simply take the current position and move
-			 * down until we hit a row that would cause a collision.
+			 * Draw the ghost (semi-transparent piece that shows 
+                         * where the current piece will land). I couldn't think 
+			 * of a better way to implement this so it'll have to do 
+			 * for now. We simply take the current position and move
+                         * down until we hit a iRow that would cause a collision
 			 */
-			Color base = type.getBaseColor();
-			base = new Color(base.getRed(), base.getGreen(), base.getBlue(), 20);
-			for(int lowest = pieceRow; lowest < ROW_COUNT; lowest++) {
-				//If no collision is detected, try the next row.
-				if(isValidAndEmpty(type, pieceCol, lowest, rotation)) {					
+			Color clrBase = tilType.getBaseColor();
+			clrBase = new Color(clrBase.getRed(), clrBase.getGreen()
+                                , clrBase.getBlue(), 20);
+			for(int iLowest = iPieceRow; iLowest < 
+                                ROW_COUNT; iLowest++) {
+                            
+				//If no collision is detected, try the next iRow
+				if(isValidAndEmpty(tilType, iPieceCol, 
+                                        iLowest, iRotation)) {
+                                    
 					continue;
 				}
 				
-				//Draw the ghost one row higher than the one the collision took place at.
-				lowest--;
+				//Draw the ghost one iRow higher than the one 
+                                //the collision took place at.
+				iLowest--;
 				
 				//Draw the ghost piece.
-				for(int col = 0; col < type.getDimension(); col++) {
-					for(int row = 0; row < type.getDimension(); row++) {
-						if(lowest + row >= 2 && type.isTile(col, row, rotation)) {
-							drawTile(base, base.brighter(), base.darker(), (pieceCol + col) * TILE_SIZE, (lowest + row - HIDDEN_ROW_COUNT) * TILE_SIZE, g);
+				for(int iCol = 0; iCol < tilType.getDimension(); 
+                                        iCol++) {
+                                    
+					for(int iRow = 0; iRow < 
+                                                tilType.getDimension(); iRow++) {
+                                            
+						if(iLowest + iRow >= 2 && 
+                                                        tilType.isTile(iCol, iRow, 
+                                                                iRotation)) {
+							drawTile(clrBase, 
+                                                             clrBase.brighter(), 
+                                                             clrBase.darker(), 
+                                                             (iPieceCol + iCol) * 
+                                                                     TILE_SIZE, 
+                                                             (iLowest + iRow - 
+                                                               HIDDEN_ROW_COUNT) 
+                                                                    * TILE_SIZE, 
+                                                             graGraphic);
 						}
 					}
 				}
@@ -368,14 +451,21 @@ public class BoardPanel extends JPanel {
 			}
 			
 			/*
-			 * Draw the background grid above the pieces (serves as a useful visual
-			 * for players, and makes the pieces look nicer by breaking them up.
+			 * Draw the background grid above the pieces 
+                         * (serves as a useful visual
+			 * for players, and makes the pieces look nicer by 
+                         * breaking them up.
 			 */
-			g.setColor(Color.DARK_GRAY);
-			for(int x = 0; x < COL_COUNT; x++) {
-				for(int y = 0; y < VISIBLE_ROW_COUNT; y++) {
-					g.drawLine(0, y * TILE_SIZE, COL_COUNT * TILE_SIZE, y * TILE_SIZE);
-					g.drawLine(x * TILE_SIZE, 0, x * TILE_SIZE, VISIBLE_ROW_COUNT * TILE_SIZE);
+                        
+			graGraphic.setColor(Color.DARK_GRAY);
+			for(int iX = 0; iX < COL_COUNT; iX++) {
+				for(int iY = 0; iY < VISIBLE_ROW_COUNT; iY++) {
+					graGraphic.drawLine(0, iY * TILE_SIZE, 
+                                                COL_COUNT * TILE_SIZE, iY * 
+                                                        TILE_SIZE);
+					graGraphic.drawLine(iX * TILE_SIZE, 0, 
+                                                iX * TILE_SIZE, 
+                                                VISIBLE_ROW_COUNT * TILE_SIZE);
 				}
 			}
 		}
@@ -383,54 +473,72 @@ public class BoardPanel extends JPanel {
 		/*
 		 * Draw the outline.
 		 */
-		g.setColor(Color.WHITE);
-		g.drawRect(0, 0, TILE_SIZE * COL_COUNT, TILE_SIZE * VISIBLE_ROW_COUNT);
+		graGraphic.setColor(Color.WHITE);
+                
+		graGraphic.drawRect(0, 0, TILE_SIZE * COL_COUNT, TILE_SIZE * 
+                        VISIBLE_ROW_COUNT);
 	}
 	
 	/**
-	 * Draws a tile onto the board.
-	 * @param type The type of tile to draw.
-	 * @param x The column.
-	 * @param y The row.
-	 * @param g The graphics object.
+	 * Draws a tilTile onto the board.
+	 * @param tilType The type of tilTile to draw.
+	 * @param iX The column.
+	 * @param iY The iRow.
+	 * @param graGraphics The graphics object.
 	 */
-	private void drawTile(TileType type, int x, int y, Graphics g) {
-		drawTile(type.getBaseColor(), type.getLightColor(), type.getDarkColor(), x, y, g);
+	private void drawTile(TileType tilType, int iX, int iY, Graphics 
+                graGraphics) {
+            
+		drawTile(tilType.getBaseColor(), tilType.getLightColor(), 
+                        tilType.getDarkColor(), iX, iY, graGraphics);
 	}
 	
 	/**
-	 * Draws a tile onto the board.
-	 * @param base The base color of tile.
-	 * @param light The light color of the tile.
-	 * @param dark The dark color of the tile.
-	 * @param x The column.
-	 * @param y The row.
-	 * @param g The graphics object.
+	 * Draws a tilTile onto the board.
+	 * @param clrBase The base color of tilTile.
+	 * @param clrLight The light color of the tilTile.
+	 * @param clrDark The dark color of the tilTile.
+	 * @param iX The column.
+	 * @param iY The iRow.
+	 * @param graGraphics The graphics object.
 	 */
-	private void drawTile(Color base, Color light, Color dark, int x, int y, Graphics g) {
+	private void drawTile(Color clrBase, Color clrLight, Color clrDark, 
+                int iX, int iY, Graphics graGraphics) {
 		
 		/*
-		 * Fill the entire tile with the base color.
+		 * Fill the entire tilTile with the base color.
 		 */
-		g.setColor(base);
-		g.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+		graGraphics.setColor(clrBase);
+                
+		graGraphics.fillRect(iX, iY, TILE_SIZE, TILE_SIZE);
 		
 		/*
-		 * Fill the bottom and right edges of the tile with the dark shading color.
+		 * Fill the bottom and right edges of the tilTile 
+                 * with the dark shading color.
 		 */
-		g.setColor(dark);
-		g.fillRect(x, y + TILE_SIZE - SHADE_WIDTH, TILE_SIZE, SHADE_WIDTH);
-		g.fillRect(x + TILE_SIZE - SHADE_WIDTH, y, SHADE_WIDTH, TILE_SIZE);
+		graGraphics.setColor(clrDark);
+                
+		graGraphics.fillRect(iX, iY + TILE_SIZE - SHADE_WIDTH, 
+                        TILE_SIZE, SHADE_WIDTH);
+                
+		graGraphics.fillRect(iX + TILE_SIZE - SHADE_WIDTH, iY, 
+                        SHADE_WIDTH, TILE_SIZE);
 		
 		/*
-		 * Fill the top and left edges with the light shading. We draw a single line
-		 * for each row or column rather than a rectangle so that we can draw a nice
-		 * looking diagonal where the light and dark shading meet.
+		 * Fill the top and left edges with the light shading. 
+                 * We draw a single line for each iRow or column rather than a 
+		 * rectangle so that we can draw a nice looking diagonal where 
+		 * the light and dark shading meet.
 		 */
-		g.setColor(light);
-		for(int i = 0; i < SHADE_WIDTH; i++) {
-			g.drawLine(x, y + i, x + TILE_SIZE - i - 1, y + i);
-			g.drawLine(x + i, y, x + i, y + TILE_SIZE - i - 1);
+		graGraphics.setColor(clrLight);
+                
+		for(int iI = 0; iI < SHADE_WIDTH; iI++) {
+                    
+			graGraphics.drawLine(iX, iY + iI, iX + 
+                                TILE_SIZE - iI - 1, iY + iI);
+                        
+			graGraphics.drawLine(iX + iI, iY, iX + iI, iY + 
+                                TILE_SIZE - iI - 1);
 		}
 	}
 
