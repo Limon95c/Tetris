@@ -69,7 +69,7 @@ public class SidePanel extends JPanel {
 	/**
 	 * The y coordinate of the controls category.
 	 */
-	private static final int CONTROLS_INSET = 300;
+	private static final int CONTROLS_INSET = 270;
 	
 	/**
 	 * The number of pixels to offset between each string.
@@ -142,6 +142,8 @@ public class SidePanel extends JPanel {
 		g.drawString("E - Rotate Clockwise", LARGE_INSET, offset += TEXT_STRIDE);
 		g.drawString("S - Drop", LARGE_INSET, offset += TEXT_STRIDE);
 		g.drawString("P - Pause Game", LARGE_INSET, offset += TEXT_STRIDE);
+                g.drawString("Space - Save Game", LARGE_INSET, offset += TEXT_STRIDE);
+                g.drawString("Enter - Load Game", LARGE_INSET, offset += TEXT_STRIDE);
 		
 		/*
 		 * Draw the next piece preview box.

@@ -165,7 +165,10 @@ public class Tetris extends JFrame {
 				 * position is valid. If so, we decrement the current column by 1.
 				 */
 				case KeyEvent.VK_A:
-					if(!isPaused && board.isValidAndEmpty(currentType, currentCol - 1, currentRow, currentRotation)) {
+					if(!isPaused &&
+                                            board.isValidAndEmpty(currentType,
+                                                    currentCol - 1, currentRow,
+                                                    currentRotation)) {
 						currentCol--;
 					}
 					break;
