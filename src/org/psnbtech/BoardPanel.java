@@ -418,7 +418,7 @@ public class BoardPanel extends JPanel {
 			 */
 			Color clrBase = tilType.getBaseColor();
 			clrBase = new Color(clrBase.getRed(), clrBase.getGreen()
-                                , clrBase.getBlue(), 20);
+                                , clrBase.getBlue(), 100);
 			for(int iLowest = iPieceRow; iLowest < 
                                 ROW_COUNT; iLowest++) {
                             
@@ -466,7 +466,7 @@ public class BoardPanel extends JPanel {
                          * breaking them up.
 			 */
                         
-			graGraphic.setColor(Color.DARK_GRAY);
+			graGraphic.setColor(Color.LIGHT_GRAY);
 			for(int iX = 0; iX < COL_COUNT; iX++) {
 				for(int iY = 0; iY < VISIBLE_ROW_COUNT; iY++) {
 					graGraphic.drawLine(0, iY * TILE_SIZE, 

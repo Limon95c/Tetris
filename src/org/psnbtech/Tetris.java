@@ -135,6 +135,17 @@ public class Tetris extends JFrame {
 	 * The speed of the game.
 	 */
 	private float fGameSpeed;
+        
+        /**
+	 * The song of the game.
+	 */
+        private SoundClip auBackMusic;
+        
+        /**
+	 * AudioClips for the Game.
+	 */
+        private SoundClip auCompleteLine;
+        private SoundClip auNewPiece;
 		
 	/**
 	 * Creates a new Tetris instance. Sets up the window's properties,
@@ -165,6 +176,21 @@ public class Tetris extends JFrame {
 		add(bplBoardPanel, BorderLayout.CENTER);
                 
 		add(splSidePanel, BorderLayout.EAST);
+                
+                /**
+                * Assign the Music, and other sound Clips
+                */
+                auBackMusic = new SoundClip ("Dummy.wav");
+                
+                auCompleteLine = new SoundClip ("FilaCompleta.wav");
+                
+                auNewPiece = new SoundClip ("NewPiece.wav");
+                
+                
+                //Set Background Music to Loop
+                auBackMusic.setLooping(true);
+                
+                
 		
 		/*
 		 * Adds a custom anonymous KeyListener to the frame.
@@ -315,6 +341,15 @@ public class Tetris extends JFrame {
                                             isPaused = !isPaused;
                                                 
                                             clkLogicTimer.setPaused(isPaused);
+                                            
+                                            if(isPaused) {
+                                            
+                                                auBackMusic.stop();
+                                            }
+                                            else {
+                                                
+                                                auBackMusic.play();
+                                            }
 					}
 					break;
 				
@@ -375,12 +410,14 @@ public class Tetris extends JFrame {
 	 */
 	private void startGame() {
 		/*
-		 * Initialize our random number generator, logic timer,
+		 * Initialize our random number generator, music ,logic timer,
                  * and new game variables.
 		 */
 		this.iRandom = new Random();
 		this.isNewGame = true;
 		this.fGameSpeed = 1.0f;
+                
+                auBackMusic.play();
 		
 		/*
 		 * Setup the timer to keep the game from running before the
@@ -471,6 +508,8 @@ public class Tetris extends JFrame {
 			if(iCleared > 0) {
                             
 				iScore += 50 << iCleared;
+                                
+                                auCompleteLine.play();
 			}
 			
 			/*
@@ -504,6 +543,9 @@ public class Tetris extends JFrame {
 			 * Spawn a new piece to control.
 			 */
 			spawnPiece();
+                        
+                        //Play the new piece AudioClip
+                        auNewPiece.play();
 		}		
 	}
 	

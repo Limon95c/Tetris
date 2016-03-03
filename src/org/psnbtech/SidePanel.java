@@ -79,19 +79,25 @@ public class SidePanel extends JPanel {
 	/**
 	 * The small font.
 	 */
-	private static final Font SMALL_FONT = new Font("Tahoma", Font.BOLD, 
-                11);
+	private static final Font SMALL_FONT = new Font("Times New Roman", Font.BOLD, 
+                12);
 	
 	/**
 	 * The large font.
 	 */
-	private static final Font LARGE_FONT = new Font("Tahoma", Font.BOLD, 
-                13);
+	private static final Font LARGE_FONT = new Font("Verdana", Font.BOLD, 
+                18);
+        
+        /**
+	 * The Medium font.
+	 */
+	private static final Font MEDIUM_FONT = new Font("Arial", Font.BOLD, 
+                12);
 	
 	/**
 	 * The color to draw the text and preview box in.
 	 */
-	private static final Color DRAW_COLOR = new Color(128, 192, 128);
+	private static final Color DRAW_COLOR = new Color(128, 192, 128); 
 	
 	/**
 	 * The Tetris instance.
@@ -106,7 +112,7 @@ public class SidePanel extends JPanel {
 		this.tetTetis = tetris;
 		
 		setPreferredSize(new Dimension(200, BoardPanel.PANEL_HEIGHT));
-		setBackground(Color.BLACK);
+		setBackground(Color.ORANGE);
 	}
 	
 	@Override
@@ -142,6 +148,8 @@ public class SidePanel extends JPanel {
 		/*
 		 * Draw the "Controls" category.
 		 */
+                graGraphics.setColor(Color.WHITE);
+                
 		graGraphics.setFont(LARGE_FONT);
                 
 		graGraphics.drawString("Controls", SMALL_INSET, 
@@ -177,7 +185,9 @@ public class SidePanel extends JPanel {
 		 * Draw the next piece preview box.
 		 */
                 
-		graGraphics.setFont(LARGE_FONT);
+                graGraphics.setColor(Color.BLACK);
+                
+		graGraphics.setFont(MEDIUM_FONT);
                 
 		graGraphics.drawString("Next Piece:", SMALL_INSET, 70);
                 
