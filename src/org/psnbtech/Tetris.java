@@ -294,7 +294,7 @@ public class Tetris extends JFrame {
                                  * save the game.
                                  */
                                 case KeyEvent.VK_G:
-                                    if(!isGameOver) {
+                                    if(!isGameOver && !isNewGame) {
                                         try {
                                             saveGame();
                                         }
@@ -311,8 +311,8 @@ public class Tetris extends JFrame {
                                  * we're not in a game over. If we're not,
                                  * load the game.
                                  */
-                                case KeyEvent.VK_L:
-                                    if(!isGameOver) {
+                                case KeyEvent.VK_C:
+                                    if(!isGameOver && !isNewGame) {
                                         try {
                                             loadGame();
                                         }

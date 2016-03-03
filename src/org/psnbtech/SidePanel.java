@@ -178,7 +178,7 @@ public class SidePanel extends JPanel {
                 graGraphics.drawString("G - Save Game", LARGE_INSET, 
                         iOffset += TEXT_STRIDE);
                 
-                graGraphics.drawString("L - Load Game", LARGE_INSET, 
+                graGraphics.drawString("C - Load Game", LARGE_INSET, 
                         iOffset += TEXT_STRIDE);
 		
 		/*
