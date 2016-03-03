@@ -186,11 +186,8 @@ public class Tetris extends JFrame {
                 
                 auNewPiece = new SoundClip ("NewPiece.wav");
                 
-                
                 //Set Background Music to Loop
                 auBackMusic.setLooping(true);
-                
-                
 		
 		/*
 		 * Adds a custom anonymous KeyListener to the frame.
@@ -370,22 +367,22 @@ public class Tetris extends JFrame {
 			@Override
 			public void keyReleased(KeyEvent keyEvent) {
 				
-				switch(keyEvent.getKeyCode()) {
+                            switch(keyEvent.getKeyCode()) {
 				
-				/*
-				 * Drop - When released, we set the speed of 
-				 * the logic timer back to whatever the current 
-				 * game speed is and clear out any cycles that 
-                                 * might still be elapsed.
-				 */
-				case KeyEvent.VK_S:
+                            /*
+                             * Drop - When released, we set the speed of 
+                             * the logic timer back to whatever the current 
+                             * game speed is and clear out any cycles that 
+                             * might still be elapsed.
+                             */
+                            case KeyEvent.VK_S:
                                     
-                                    clkLogicTimer.setCyclesPerSecond(fGameSpeed);
-                                        
-                                    clkLogicTimer.reset();
+                                clkLogicTimer.setCyclesPerSecond(fGameSpeed);
+                                      
+                                clkLogicTimer.reset();
                                     
-                                    break;
-				}
+                                break;
+                            }
 				
 			}
 			
@@ -801,24 +798,7 @@ public class Tetris extends JFrame {
             fileOut.println(Integer.toString(iScore)); // Guardar score
             fileOut.println(Float.toString(fGameSpeed)); // Guardar gameSpeed
             
-            // Numero del Tile Actual
-            fileOut.println(Integer.toString(tilCurrentType.ordinal()));
-            fileOut.println(Integer.toString(iCurrentCol)); // Guardar ColumnaAc
-            // Guardar Rotacion Actual
-            fileOut.println(Integer.toString(iCurrentRotation));
-            fileOut.println(Integer.toString(iCurrentRow)); // Guardar fila act
-            fileOut.println(Integer.toString(iDropCooldown)); // Guardar cool...
-            
-            // Estado de la partida
-            if(isPaused)
-                fileOut.println(Integer.toString(1)); // Pausado(1) o no(0)
-            else
-                fileOut.println(Integer.toString(0)); // Pausado(1) o no(0)
-            
-            if(isNewGame)
-                fileOut.println(Integer.toString(1)); // NewGame(1) o no(0)
-            else
-                fileOut.println(Integer.toString(0)); // NewGame(1) o no(0)
+            guardaTileActualYEstado(fileOut);
             
             // Tile siguiente
             fileOut.println(Integer.toString(tilNextType.ordinal()));
@@ -835,6 +815,31 @@ public class Tetris extends JFrame {
                 }
             }
             fileOut.close();
+        }
+        
+        public void guardaTileActualYEstado(PrintWriter fileOut) {
+            // Numero del Tile Actual
+            fileOut.println(Integer.toString(tilCurrentType.ordinal()));
+            fileOut.println(Integer.toString(iCurrentCol)); // Guardar ColumnaAc
+            // Guardar Rotacion Actual
+            fileOut.println(Integer.toString(iCurrentRotation));
+            fileOut.println(Integer.toString(iCurrentRow)); // Guardar fila act
+            fileOut.println(Integer.toString(iDropCooldown)); // Guardar cool...
+            
+            // Estado de la partida
+            if(isPaused) {
+                fileOut.println(Integer.toString(1)); // Pausado(1) o no(0)
+            }
+            else {
+                fileOut.println(Integer.toString(0)); // Pausado(1) o no(0)
+            }
+            
+            if(isNewGame) {
+                fileOut.println(Integer.toString(1)); // NewGame(1) o no(0)
+            }
+            else {
+                fileOut.println(Integer.toString(0)); // NewGame(1) o no(0)
+            }
         }
         
         public void loadGame() throws IOException {
@@ -872,15 +877,19 @@ public class Tetris extends JFrame {
                                     [Integer.parseInt(fileIn.readLine())]);
                     sScan = fileIn.readLine();
                 }
-                if(iNewGame == 1)
+                if(iNewGame == 1) {
                     isNewGame = true;
-                else
+                }
+                else {
                     isNewGame = false;
+                }
                 
-                if(iPausaGuardada == 1)
+                if(iPausaGuardada == 1) {
                     isPaused = true;
-                else
+                }
+                else {
                     isPaused = false;
+                }
                 fileIn.close();
             }
             catch (FileNotFoundException e){
