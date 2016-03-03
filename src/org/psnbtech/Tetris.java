@@ -278,7 +278,25 @@ public class Tetris extends JFrame {
                                                     Level.SEVERE, null, e);
                                         }
                                     }
-                                break;
+                                    break;
+                                
+                                /*
+                                 * Load Game - When pressed, check to see that
+                                 * we're not in a game over. If we're not,
+                                 * load the game.
+                                 */
+                                case KeyEvent.VK_L:
+                                    if(!isGameOver) {
+                                        try {
+                                            loadGame();
+                                        }
+                                        catch (IOException e) {
+                                            Logger.getLogger(
+                                            Tetris.class.getName()).log(
+                                                    Level.SEVERE, null, e);
+                                        }
+                                    }
+                                    break;
 					
 				/*
 				 * Pause Game - When pressed, check to see that 
@@ -357,16 +375,16 @@ public class Tetris extends JFrame {
 	 */
 	private void startGame() {
 		/*
-		 * Initialize our random number generator, logic timer, and new game 
-                 * variables.
+		 * Initialize our random number generator, logic timer,
+                 * and new game variables.
 		 */
 		this.iRandom = new Random();
 		this.isNewGame = true;
 		this.fGameSpeed = 1.0f;
 		
 		/*
-		 * Setup the timer to keep the game from running before the user presses enter
-		 * to start it.
+		 * Setup the timer to keep the game from running before the
+                 * user presses enter to start it.
 		 */
 		this.clkLogicTimer = new Clock(fGameSpeed);
                 
@@ -735,12 +753,97 @@ public class Tetris extends JFrame {
 	 * Saves the actual game
 	 */
         public void saveGame() throws IOException {
-            fileOut = new PrintWriter(new FileWriter(sNomDatosGuardado)); // Abrir archivo
+            // Abrir archivo
+            fileOut = new PrintWriter(new FileWriter(sNomDatosGuardado));
             fileOut.println(Integer.toString(iLevel)); // Guardar nivel
             fileOut.println(Integer.toString(iScore)); // Guardar score
             fileOut.println(Float.toString(fGameSpeed)); // Guardar gameSpeed
-            // Todavia falte
+            
+            // Numero del Tile Actual
+            fileOut.println(Integer.toString(tilCurrentType.ordinal()));
+            fileOut.println(Integer.toString(iCurrentCol)); // Guardar ColumnaAc
+            // Guardar Rotacion Actual
+            fileOut.println(Integer.toString(iCurrentRotation));
+            fileOut.println(Integer.toString(iCurrentRow)); // Guardar fila act
+            fileOut.println(Integer.toString(iDropCooldown)); // Guardar cool...
+            
+            // Estado de la partida
+            if(isPaused)
+                fileOut.println(Integer.toString(1)); // Pausado(1) o no(0)
+            else
+                fileOut.println(Integer.toString(0)); // Pausado(1) o no(0)
+            
+            if(isNewGame)
+                fileOut.println(Integer.toString(1)); // NewGame(1) o no(0)
+            else
+                fileOut.println(Integer.toString(0)); // NewGame(1) o no(0)
+            
+            // Tile siguiente
+            fileOut.println(Integer.toString(tilNextType.ordinal()));
+            
+            // Board
+            for(int iI = 0; iI < bplBoardPanel.getROW() ; iI++) {
+                for(int iJ = 0; iJ < bplBoardPanel.getCOL(); iJ++) {
+                    if(bplBoardPanel.getTile(iJ, iI) != null) {
+                        fileOut.println(Integer.toString(iI));
+                        fileOut.println(Integer.toString(iJ));
+                        fileOut.println(Integer.toString(
+                                bplBoardPanel.getTile(iJ, iI).ordinal()));
+                    }
+                }
+            }
             fileOut.close();
+        }
+        
+        public void loadGame() throws IOException {
+            int iPausaGuardada, iNewGame;
+            String sScan;
+            // Abrimos el archivo en caso de que hubiera uno
+            try {
+                // Abrir el archivo
+                isPaused = true;
+                fileIn = new BufferedReader(new FileReader(sNomDatosGuardado));
+                iLevel = Integer.parseInt(fileIn.readLine());
+                iScore = Integer.parseInt(fileIn.readLine());
+                fGameSpeed = Float.parseFloat(fileIn.readLine());
+                tilCurrentType = TileType.values()
+                        [Integer.parseInt(fileIn.readLine())];
+                iCurrentCol = Integer.parseInt(fileIn.readLine());
+                iCurrentRotation = Integer.parseInt(fileIn.readLine());
+                iCurrentRow = Integer.parseInt(fileIn.readLine());
+                iDropCooldown = Integer.parseInt(fileIn.readLine());
+                iPausaGuardada = Integer.parseInt(fileIn.readLine());
+                iNewGame = Integer.parseInt(fileIn.readLine());
+                tilNextType = TileType.values()
+                        [Integer.parseInt(fileIn.readLine())];
+                for(int iI = 0; iI < bplBoardPanel.getROW() ; iI++) {
+                    for(int iJ = 0; iJ < bplBoardPanel.getCOL(); iJ++) {
+                        bplBoardPanel.nullTile(iJ, iI);
+                    }
+                }
+                sScan = fileIn.readLine();
+                while(sScan != null) {
+                    int iColum = Integer.parseInt(fileIn.readLine());
+                    bplBoardPanel.setTile(iColum,
+                            Integer.parseInt(sScan),
+                            TileType.values()
+                                    [Integer.parseInt(fileIn.readLine())]);
+                    sScan = fileIn.readLine();
+                }
+                if(iNewGame == 1)
+                    isNewGame = true;
+                else
+                    isNewGame = false;
+                
+                if(iPausaGuardada == 1)
+                    isPaused = true;
+                else
+                    isPaused = false;
+                fileIn.close();
+            }
+            catch (FileNotFoundException e){
+                // Si no se encuentra archivo guardado no cargar nada
+            }
         }
 
 	/**

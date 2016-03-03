@@ -279,8 +279,17 @@ public class BoardPanel extends JPanel {
 	 * @param iY The iRow.
 	 * @param tilType The value to set to the tilTile to.
 	 */
-	private void setTile(int  iX, int iY, TileType tilType) {
+	public void setTile(int iX, int iY, TileType tilType) {
 		tiles[iY][iX] = tilType;
+	}
+        
+        /**
+	 * Sets a tilTile located at the desired column and iRow in null
+	 * @param iX The column.
+	 * @param iY The iRow.
+	 */
+	public void nullTile(int  iX, int iY) {
+		tiles[iY][iX] = null;
 	}
 		
 	/**
@@ -289,7 +298,7 @@ public class BoardPanel extends JPanel {
 	 * @param iY The iRow.
 	 * @return The tilTile.
 	 */
-	private TileType getTile(int iX, int iY) {
+	public TileType getTile(int iX, int iY) {
 		return tiles[iY][iX];
 	}
 	
@@ -541,5 +550,21 @@ public class BoardPanel extends JPanel {
                                 TILE_SIZE - iI - 1);
 		}
 	}
+        
+        /**
+	 * Get the amount of columns
+	 * @return Number of columns
+	 */
+        public int getCOL() {
+            return COL_COUNT;
+        }
+        
+        /**
+	 * Get the amount of rows
+	 * @return Number of rows
+	 */
+        public int getROW() {
+            return ROW_COUNT;
+        }
 
 }

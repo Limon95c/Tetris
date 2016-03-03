@@ -153,7 +153,7 @@ public enum TileType {
 	/**
 	 * Piece TypeT.
 	 */
-	TypeT(new Color(128, BoardPanel.COLOR_MIN, 128), 3, 3, 2, 
+	TypeT(new Color(128, BoardPanel.COLOR_MIN, 128), 3, 3, 2,
                 new boolean[][] {
                     
 		{
